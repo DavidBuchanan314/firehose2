@@ -2,7 +2,7 @@
 
 Disclaimer: These are just my ideas as an individual, and is in no way authoritative with regards to future protocol changes. If you're reading this in the future and a "firehose v2" concretely exists, it's likely that this document does not accurately describe it. 
 
-The "firehose" is more formally known as the `com.atproto.sync.subscribeRepos` [Event Stream](https://atproto.com/specs/event-stream). This is the main primitive for real-time synchronosation of repos within atproto. There are a few broad categories of event stream consumers (names made up by me):
+The "firehose" is more formally known as the `com.atproto.sync.subscribeRepos` [Event Stream](https://atproto.com/specs/event-stream). It's the main primitive for real-time synchronisation of repos within atproto. There are a few broad categories of event stream consumers (names made up by me):
 
 1. "**Full Sync**" - An entity such as a Relay that maintains complete and authenticated copies of upstream repos, keeping them synchronised in close-to-real-time. This implies performing cryptographic verification.
 2. "**Authenticated Streaming**" - An entity such as a Feed Generator that watches the event stream in real time, but doesn't try to store a full copy of the data (maybe it only cares about trying to count likes on posts from the previous 24h, for example). It verifies commit signatures, but it is unable to perform rigorous verification of changes to the MST (due to not storing a copy of the previous MST state).
