@@ -9,7 +9,7 @@ The "firehose" is more formally known as the `com.atproto.sync.subscribeRepos` [
 3. "**Unauthenticated Streaming**" - As above, but without bothering to verify signatures (for many "low stakes" use cases, there is no strong desire to authenticate data cryptographically).
 4. "**Filtered Streaming**" - Similar to the above, but only interested in a subset of events (e.g. "only `app.bsky.feed.post` record creation events from this list of DIDs").
 
-At present, consuming the firehose from Bluesky PBC's relay (`bsky.network`) is rather bandwidth intensive, using in excess of 2TB of network bandwidth per month, and this number will only go up as atproto rises in popularity.
+At present, consuming the firehose from Bluesky PBC's relay (`bsky.network`) is rather bandwidth intensive, using in excess of 2TB of network bandwidth per month. This number will only go up as atproto rises in popularity.
 
 [Jetstream](https://docs.bsky.app/blog/jetstream) improves the story for use cases 3 and 4, but since it lacks authentication, it is unable to help for the others.
 
