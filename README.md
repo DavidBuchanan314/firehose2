@@ -1,6 +1,6 @@
 # firehose2 [Draft/WIP]
 
-Disclaimer: These are just my ideas as an individual, and is in no way authoritative with regards to future protocol changes. If you're reading this in the future and a "firehose v2" concretely exists, it's likely that this document does not accurately describe it. 
+Disclaimer: These are just my ideas as an individual, and it is in no way authoritative with regards to future protocol changes. If you're reading this in the future and a "firehose v2" concretely exists, it's likely that this document does not accurately describe it. 
 
 ## TODO:
 
