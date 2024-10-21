@@ -13,6 +13,7 @@ from cbrrr import encode_dag_cbor, decode_dag_cbor, CID
 
 from util import tid_now, iso_string_now, enumerate_blobs, CarWriter
 from iterate_records import iterate_records
+from crypto import privkey_from_pem, raw_sign
 
 REPO_DID = "did:plc:oky5czdrnfjpqslsw2a5iclo"
 
@@ -24,6 +25,8 @@ if __name__ == "__main__":
 	ns = NodeStore(bs)
 	wrangler = NodeWrangler(ns)
 	prev_mst_root = ns.stored_node(MSTNode.empty_root()).cid
+
+	privkey = privkey_from_pem(open("privkey.pem").read())
 
 	outfile = open("firehose2.bin" if FIREHOSE2 else "firehose.bin", "wb")
 
@@ -55,7 +58,7 @@ if __name__ == "__main__":
 			"opsCid": CID.cidv1_dag_cbor_sha256_32_from(encode_dag_cbor(ops_array))
 		} if FIREHOSE2 else {})
 
-		commit_object["sig"] = hashlib.sha512(encode_dag_cbor(commit_object)).digest() # this isn't a real signature but it should be a decent stand-in approximation (64 bytes of uncompressible data)
+		commit_object["sig"] = raw_sign(privkey, encode_dag_cbor(commit_object))
 		commit_bytes = encode_dag_cbor(commit_object)
 		commit_cid = CID.cidv1_dag_cbor_sha256_32_from(commit_bytes)
 
@@ -77,6 +80,7 @@ if __name__ == "__main__":
 			"time": iso_string_now() # TODO: consider using unix millis integer? or unix seconds fp64?
 		} | ( {
 			"commitSig": commit_object["sig"], # don't store the commit object itself, the client should have all the data necessary to reconstruct it
+			"mstRoot": mst_root, # only not-full-sync consumers need this, to verify sigs
 			"ops": [{
 				"action": "create",
 				"path": path,
