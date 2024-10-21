@@ -1,5 +1,7 @@
 import io
 import zlib
+import os
+import hashlib
 
 from atmst.blockstore import MemoryBlockStore
 from atmst.mst.node_store import NodeStore
@@ -14,7 +16,7 @@ from iterate_records import iterate_records
 
 REPO_DID = "did:plc:oky5czdrnfjpqslsw2a5iclo"
 
-FIREHOSE2 = True
+FIREHOSE2 = False
 COMPRESS = True
 
 if __name__ == "__main__":
@@ -53,7 +55,7 @@ if __name__ == "__main__":
 			"opsCid": CID.cidv1_dag_cbor_sha256_32_from(encode_dag_cbor(ops_array))
 		} if FIREHOSE2 else {})
 
-		commit_object["sig"] = b"TODO"
+		commit_object["sig"] = hashlib.sha512(encode_dag_cbor(commit_object)).digest() # this isn't a real signature but it should be a decent stand-in approximation (64 bytes of uncompressible data)
 		commit_bytes = encode_dag_cbor(commit_object)
 		commit_cid = CID.cidv1_dag_cbor_sha256_32_from(commit_bytes)
 
