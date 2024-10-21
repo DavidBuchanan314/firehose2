@@ -16,7 +16,7 @@ from iterate_records import iterate_records
 
 REPO_DID = "did:plc:oky5czdrnfjpqslsw2a5iclo"
 
-FIREHOSE2 = False
+FIREHOSE2 = True
 COMPRESS = True
 
 if __name__ == "__main__":
@@ -62,9 +62,8 @@ if __name__ == "__main__":
 		car = io.BytesIO()
 		car_writer = CarWriter(car, commit_cid)
 		car_writer.write_block(commit_cid, commit_bytes)
-		if not FIREHOSE2:
-			for created_cid in created:
-				car_writer.write_block(created_cid, bs.get_block(bytes(created_cid)))
+		for created_cid in created:
+			car_writer.write_block(created_cid, bs.get_block(bytes(created_cid)))
 		car_writer.write_block(record_cid, record_bytes)
 
 		event = {
@@ -72,15 +71,24 @@ if __name__ == "__main__":
 			"rebase": False,
 			"tooBig": False,
 			"repo": REPO_DID,
-			"commit": commit_cid,
 			"prev": None,
 			"rev": rev_tid,
 			"since": since,
+			"time": iso_string_now() # TODO: consider using unix millis integer? or unix seconds fp64?
+		} | ( {
+			"commitSig": commit_object["sig"], # don't store the commit object itself, the client should have all the data necessary to reconstruct it
+			"ops": [{
+				"action": "create",
+				"path": path,
+				# store the data, not the CID! client can derive CID, assuming sha256/dag-cbor format
+				"record": record_bytes # serialised dag-cbor bytes
+			}],
+			# we don't store the "blobs" array, it should be possible to infer it from the record bodies?
+		} if FIREHOSE2 else {
+			"commit": commit_cid,
 			"blocks": car.getvalue(),
-			"ops": ops_array,
-			"time": iso_string_now()
-		} | ( {} if FIREHOSE2 else {
 			"blobs": blobs,
+			"ops": ops_array,
 		})
 
 		event_bytes = encode_dag_cbor(event)
